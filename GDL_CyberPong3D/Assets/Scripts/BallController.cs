@@ -12,14 +12,15 @@ public class BallController : MonoBehaviour
     private Vector3 direction;
 
     private Rigidbody rb;
-     
-   // private bool stopped;
+
+    private bool stopped = true;
+
+    public GameObject sparksVFX;
 
     // Start is called before the first frame update
     void Start()
     {
         this.rb = GetComponent<Rigidbody>();
-        ChooseDirection();
     }
 
     // Update is called once per frame
@@ -34,13 +35,19 @@ public class BallController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (stopped)
+            return;
+
         this.rb.MovePosition(this.rb.position + direction * speed * Time.fixedDeltaTime); 
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        bool hit = false;
+
         if (other.CompareTag("Wall")) {
             direction.z = -direction.z;
+            hit = true;
         }
 
         if (other.CompareTag("Racket")) {
@@ -50,6 +57,13 @@ public class BallController : MonoBehaviour
             newDirection.z = Mathf.Sign(newDirection.z) * Mathf.Max(Mathf.Abs(newDirection.z), this.minDirection);
 
             direction = newDirection;
+            hit = true;
+        }
+
+        if (hit)
+        {
+            GameObject sparks = Instantiate(this.sparksVFX, transform.position, transform.rotation);
+            Destroy(sparks, 4f);
         }
     }
 
@@ -61,22 +75,13 @@ public class BallController : MonoBehaviour
         this.direction = new Vector3(0.5f * signX, 0, 0.5f * signZ);
     }
 
-    /* 
-    // CODE SNIPPET FOR RACKET DIRECTION CHANGE
-    Vector3 newDirection = (transform.position - other.transform.position).normalized;
-
-    newDirection.x = Mathf.Sign(newDirection.x) * Mathf.Max(Mathf.Abs(newDirection.x), this.minDirection);
-    newDirection.z = Mathf.Sign(newDirection.z) * Mathf.Max(Mathf.Abs(newDirection.z), this.minDirection);
-
-    direction = newDirection;
-    */
-    /*
     public void Stop() {
         stopped = true;
     }
 
     public void Go() {
+        ChooseDirection();
         stopped = false;
-    }*/
+    }
 
 }

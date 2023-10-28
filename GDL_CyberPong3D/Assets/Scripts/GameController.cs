@@ -5,15 +5,17 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public GameObject ball;
+
     public Text scoreTextLeft;
     public Text scoreTextRight;
 
+    private bool started = false;
+
     public Starter starter;
 
-    public GameObject ball;
-
-    private int scoreLeft;
-    private int scoreRight;
+    private int scoreLeft = 0;
+    private int scoreRight = 0;
 
     private Vector3 startingPosition;
 
@@ -22,32 +24,41 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //startingPosition = ball.transform.position;
-        //ballController = ball.GetComponent<BallController>(); 
+        this.startingPosition = ball.transform.position;
+        this.ballController = ball.GetComponent<BallController>(); 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (started)
+        {
+            return;
+        }
+
+        if (Input.GetKey(KeyCode.Space))
+        {
+            this.started = true;
+            this.starter.StartCountdown();
+        }
     }
 
     public void StartGame() {
-        
+        this.ballController.Go();
     }
 
     public void ScoreGoalLeft() {
         Debug.Log("left");
         this.scoreRight += 1;
         UpdateUI();
-        //ResetBall();
+        ResetBall();
     }
 
     public void ScoreGoalRight() {
         Debug.Log("right");
         this.scoreLeft += 1;
         UpdateUI();
-        //ResetBall();
+        ResetBall();
     }
 
 
@@ -58,10 +69,10 @@ public class GameController : MonoBehaviour
     
     
     private void ResetBall() {
-        //this.ballController.Stop();
+        this.ballController.Stop(); 
         this.ball.transform.position = this.startingPosition;
-        //this.ballController.Go();
+        this.starter.StartCountdown();
     }
-    
+
 
 }
